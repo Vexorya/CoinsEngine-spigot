@@ -1,7 +1,7 @@
 package su.nightexpress.coinsengine.hook;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.nightexpress.coinsengine.CoinsEnginePlugin;
@@ -46,7 +46,7 @@ public class PlaceholderAPIHook {
         }
 
         private final CoinsEnginePlugin plugin;
-        private final Map<String, BiFunction<Player, Currency, String>> placeholders;
+        private final Map<String, BiFunction<OfflinePlayer, Currency, String>> placeholders;
 
         public Expansion(@NotNull CoinsEnginePlugin plugin) {
             this.plugin = plugin;
@@ -141,7 +141,7 @@ public class PlaceholderAPIHook {
         }
 
         @Override
-        public String onPlaceholderRequest(Player player, @NotNull String params) {
+        public String onRequest(OfflinePlayer player, @NotNull String params) {
             // top_balance_coins_1
             // top_player_coins_1
             if (params.startsWith("top_")) {
@@ -187,8 +187,9 @@ public class PlaceholderAPIHook {
         }
 
         @Nullable
-        private String handleUserCurrency(@NotNull Player player, @NotNull Function<CoinsUser, String> function) {
-            CoinsUser user = plugin.getUserManager().getOrFetch(player);
+        private String handleUserCurrency(@NotNull OfflinePlayer player, @NotNull Function<CoinsUser, String> function) {
+            CoinsUser user = plugin.getUserManager().getOrFetch(player.getUniqueId());
+            if (user == null) return "0";
             return function.apply(user);
         }
     }
